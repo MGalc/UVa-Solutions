@@ -33,17 +33,41 @@ typedef pair<double, point> circle;
 typedef vector<point> polygon;
 
 const double PI = 2 * acos(0);
+static constexpr int maxN = 31625;
+vi primes;
+
+void sieve() {
+    bitset<maxN> mprimes;
+    primes.push_back(2);
+
+    for (int i = 3; i < maxN; i+=2) {
+        if (!mprimes[i]) {
+            primes.push_back(i);
+            for (int j = i+i+i; j < maxN; j+=i+i) {
+                mprimes[j] = true;
+            }
+        }
+    }
+}
 
 int main() {
     ios::sync_with_stdio(false); cin.tie(0);
     //////////////start//////////////
 
-    string line;
-    while (getline(cin, line)) {
-        For(it, line)
-            *it -= 7;
+    sieve();
+    int N;
+    while (cin >> N, N) {
+        int init = N;
+        int answ = N;
+        rep(i, primes.sz) {
+            if (N < primes[i]) break;
+            if (N % primes[i] == 0) answ -= answ/primes[i];
+            while (N % primes[i] == 0) N /= primes[i];
+        }
 
-        cout << line << endl;
+        if (N > 1) answ -= answ/N;
+
+        cout << answ << endl;
     }
 
     //////////////end////////////////

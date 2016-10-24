@@ -33,17 +33,47 @@ typedef pair<double, point> circle;
 typedef vector<point> polygon;
 
 const double PI = 2 * acos(0);
+static constexpr int maxN = 2000010;
 
 int main() {
     ios::sync_with_stdio(false); cin.tie(0);
     //////////////start//////////////
 
-    string line;
-    while (getline(cin, line)) {
-        For(it, line)
-            *it -= 7;
+    vi relprimes(maxN);
 
-        cout << line << endl;
+    relprimes[0] = 0;
+    relprimes[1] = 0;
+    for (int i = 2; i < maxN; i++) relprimes[i] = i;
+    bitset<maxN> mprimes;
+
+    for (int i = 2; i < maxN; i+=2) {
+        relprimes[i] -= relprimes[i] / 2;
+    }
+
+    for (int i = 3; i < maxN; i+=2) {
+        if (!mprimes[i]) {
+            for (int j = i; j < maxN; j+=i) {
+                relprimes[j] -= relprimes[j] / i;
+                mprimes[j] = true;
+            }
+        }
+    }
+
+    for (int i = 2; i < maxN; i++) {
+        relprimes[i] = relprimes[relprimes[i]] + 1;
+    }
+
+    for (int i = 2; i < maxN; i++) {
+        relprimes[i] += relprimes[i-1];
+    }
+
+    int T;
+    cin >> T;
+    while (T--) {
+        int L, U;
+        cin >> L >> U;
+
+        cout << relprimes[U] - relprimes[L-1] << endl;
     }
 
     //////////////end////////////////
