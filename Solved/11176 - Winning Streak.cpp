@@ -33,49 +33,39 @@ typedef pair<double, point> circle;
 typedef vector<point> polygon;
 
 const double PI = 2 * acos(0);
-vector<vector<ld>> dp;
+vector<vector<double>> dp;
 int N;
-ld P;
-
-ld solve(int len, int currentstreak, int maxstreak) {
-    if (len > N) return maxstreak * P;
-    if (dp[currentstreak][maxstreak] != -1.0l) return dp[currentstreak][maxstreak];
-    return 0ll;
-}
+double P;
+vector<double> probpows;
 
 int main() {
     ios::sync_with_stdio(false); cin.tie(0);
     //////////////start//////////////
 
+    dp.assign(510, vector<double>(510, -1.0l));
     while (cin >> N >> P, N) {
-        dp.assign(N+1, vector<ld>(N+1, -1.0l));
+        probpows.assign(N+1, 0.0);
+        probpows[0] = P;
+        for (int i = 1; i <= N; i++) probpows[i] = probpows[i-1] * P;
 
-        // n = 0
-        // 0 1 2 3 STREAKS
-        // -------
-        // 1 1
-        //
-        // n = 2
-        // 0 1 2 3 STREAKS
-        // -------
-        // 1 2 1
-        //
-        // n = 3
-        // 0 1 2 3 STREAKS
-        // -------
-        // 1 4 2 1
-        //
-        // n = 4
-        // 0 1 2 3 4 STREAKS
-        // ---------
-        // 1 7 5 2 1
+        rep(i, N+1) dp[0][i] = 1.0;
+        for (int i = 1; i <= N; i++) {
+            for (int j = 0; j <= N; j++) {
+                if (i <= j)
+                    dp[i][j] = 1.0;
+                else if (i - 1 == j)
+                    dp[i][j] = dp[i-1][j] - probpows[j];
+                else
+                    dp[i][j] = dp[i-1][j] - (dp[i - j - 2][j] * probpows[j] * (1-P));
+            }
+        }
 
-        // LL LW WL WW
-        // 0  1  1  2
-        // LLL LLW LWL LWW WLL WLW WWL WWW
-        // 0   1   1   2   1   1   2   3
-        // LLLL WLLL LLLW WLLW LLWL WLWL LLWW WLWW LWLL WWLL LWLW WWLW LWWL WWWL LWWW WWWW
-        // 0    1    1    1    1    1    2    2    1    2    1    2    2    3    3    4
+        double res = 0;
+        for (int i = 1; i <= N; i++) {
+            res += i * (dp[N][i] - dp[N][i-1]);
+        }
+
+        cout << fixed << setprecision(10) << res << endl;
     }
 
     //////////////end////////////////
