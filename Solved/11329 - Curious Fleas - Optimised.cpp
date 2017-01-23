@@ -30,7 +30,7 @@ const double PI = 2 * acos(0);
 static const int gridSz = 4;
 static const int maxVals = 67108864; //2^26
 
-vector<int> dist;
+unordered_map<int, int> dist;
 
 int rollUp(int info) {
     int loc = info & 0b1111;
@@ -199,7 +199,8 @@ int main() {
         info = dieLoc;
         info |= fleaLocs << 10;
 
-        dist.assign(maxVals, INF);
+        dist.clear();
+        //dist.assign(maxVals, INF);
         dist[info] = 0;
 
         queue<pair<int, int>> q;
@@ -213,7 +214,7 @@ int main() {
 
             int next;
             next = rollUp(qinfo);
-            if (next != -1 && dist[next] > qdist + 1) {
+            if (next != -1 && dist[next] == 0) {
                 dist[next] = qdist+1;
                 q.push(mp(next, qdist+1));
                 if (((next >> 4) & 0b111111) == 0b111111) {
@@ -222,7 +223,7 @@ int main() {
                 }
             }
             next = rollDown(qinfo);
-            if (next != -1 && dist[next] > qdist + 1) {
+            if (next != -1 && dist[next] == 0) {
                 dist[next] = qdist+1;
                 q.push(mp(next, qdist+1));
                 if (((next >> 4) & 0b111111) == 0b111111) {
@@ -231,7 +232,7 @@ int main() {
                 }
             }
             next = rollLeft(qinfo);
-            if (next != -1 && dist[next] > qdist + 1) {
+            if (next != -1 && dist[next] == 0) {
                 dist[next] = qdist+1;
                 q.push(mp(next, qdist+1));
                 if (((next >> 4) & 0b111111) == 0b111111) {
@@ -240,7 +241,7 @@ int main() {
                 }
             }
             next = rollRight(qinfo);
-            if (next != -1 && dist[next] > qdist + 1) {
+            if (next != -1 && dist[next] == 0) {
                 dist[next] = qdist+1;
                 q.push(mp(next, qdist+1));
                 if (((next >> 4) & 0b111111) == 0b111111) {
